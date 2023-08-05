@@ -1,7 +1,8 @@
 const express = require("express");
+const loggedIn = require("../controllers/loggedIn");
 const router = express.Router();
 
-router.get("/", (req, res) => {
+router.get("/", loggedIn, (req, res) => {
   res.render("index");
 });
 
