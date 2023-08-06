@@ -1,8 +1,18 @@
-form.addEventListener("submit", () => {
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  if (password.value !== confirmPassword.value) {
+    error.style.display = "block";
+    error.innerText = "Password and Confirm Password do not match";
+    return;
+  }
+
   const register = {
     email: email.value,
     password: password.value,
+    confirmPass: confirmPassword.value,
   };
+
   fetch("/api/register", {
     method: "POST",
     body: JSON.stringify(register),
@@ -12,7 +22,7 @@ form.addEventListener("submit", () => {
   })
     .then((res) => res.json())
     .then((data) => {
-      if (data.status == "error") {
+      if (data.status === "error") {
         success.style.display = "none";
         error.style.display = "block";
         error.innerText = data.error;

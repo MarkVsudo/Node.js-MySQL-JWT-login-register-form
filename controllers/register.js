@@ -2,25 +2,31 @@ const db = require("../routes/db-config");
 const bcrypt = require("bcryptjs");
 
 const register = async (req, res) => {
-  const { email, password: Npassoword } = req.body;
-  if (!email || !Npassoword)
+  const { email, password: Npassword, confirmPass } = req.body;
+
+  if (!email || !Npassword || !confirmPass) {
     return res.json({
       status: "error",
-      error: "Please enter your email and password",
+      error: "Please enter your email and password, and confirm the password",
     });
-  else {
+  } else if (Npassword !== confirmPass) {
+    return res.json({
+      status: "error",
+      error: "Password and Confirm Password do not match",
+    });
+  } else {
     db.query(
       "SELECT email FROM users WHERE email = ?",
       [email],
       async (err, result) => {
         if (err) throw err;
-        if (result[0])
+        if (result[0]) {
           return res.json({
             status: "error",
             error: "Email has already been registered",
           });
-        else {
-          const password = await bcrypt.hash(Npassoword, 8);
+        } else {
+          const password = await bcrypt.hash(Npassword, 8);
           db.query(
             "INSERT INTO users SET ?",
             { email: email, password: password },
